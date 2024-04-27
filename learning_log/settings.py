@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     # My apps
     'learning_logs',
     'users',
+    'api',
 )
 
 MIDDLEWARE_CLASSES = (
