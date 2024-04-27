@@ -9,6 +9,8 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('learning_logs:index'))
 
+def parse(request):
+    return "nihaohaoahao"
 def register(request):
     """Register a new user."""
     if request.method != 'POST':
