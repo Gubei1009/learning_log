@@ -1,3 +1,7 @@
+import base64
+import re
+import urllib.parse
+
 import requests
 from bs4 import BeautifulSoup
 from django.http import JsonResponse, HttpResponse
@@ -19,7 +23,7 @@ def parse(request):
     return JsonResponse(res)
 
 
-#米贝分享www.mibei77.com
+# 米贝分享www.mibei77.com
 def getFreeSS(request):
     url = request.GET.get("url")
     rs = requests.get(url)
@@ -33,5 +37,26 @@ def getFreeSS(request):
             print("文件路径：" + e.text)
             rs = requests.get(e.text)
             break
-    print(rs.text)
-    return HttpResponse(rs.text)
+
+    base64_str = str(base64.b64decode(rs.text), "utf-8").replace("\r", "")
+    # print(base64_str)
+
+    res = ""
+    oldStr = "(mibei77.com 米贝节点分享)"
+    repStr = "(llh爬取)"
+    for e in base64_str.split("\n"):
+        # temp = ""
+        temp = e.replace(urllib.parse.quote(oldStr), repStr)
+        # print(temp==e)
+        if (e == temp) & (e != ""):
+            index = e.find("://")+len("://")
+            start = e[:index]
+            b64 =str(base64.b64decode(e[index:]),"utf-8")
+            temp = b64.replace(oldStr, repStr)
+            temp = str(base64.b64encode(temp.encode("utf-8")),"utf-8")
+            # print("index "+index+"---e[index]==="+e[index]+"b64解码"+b64)
+            temp = start + temp
+            # print(temp)
+        print(temp)
+        res = res + temp+"\r"
+    return HttpResponse(base64.b64encode(res.encode("utf-8")))
